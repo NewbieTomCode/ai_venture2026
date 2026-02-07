@@ -6,3 +6,7 @@ requests
 python-dotenv
 openai
 pillow
+google-genai
+pydantic>=2.0.0
+python-dotenv
+google-cloud-vision
