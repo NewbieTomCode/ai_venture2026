@@ -19,7 +19,7 @@ def wait_for_op(operation, uri):
     """Helper to poll the operation until finished."""
     print(f"Generation started... Target: {uri}")
     while not operation.done:
-        time.sleep(1)
+        time.sleep(15)
         operation = client.operations.get(operation)
 
     print("Video generation complete! Check your bucket now.")
@@ -44,7 +44,8 @@ def base_veo_video(prompt_text, duration):
         output_gcs_uri=full_uri
         ),
     )
-    return wait_for_op(operation, full_uri)
+    finished_op = wait_for_op(operation, full_uri)
+    return finished_op, full_uri # Return both!
 
 
 
@@ -66,27 +67,52 @@ def extend_veo_video(prompt_text, previous_op):
             output_gcs_uri=full_uri
         ),
     )
-    return wait_for_op(operation, full_uri)
+    finished_op = wait_for_op(operation, full_uri)
+    return finished_op, full_uri # Return both!
+
 
 def gen_video(prompt_text, target_duration):
     """Decides whether to just generate or to generate + extend."""
     if target_duration <= 8:
         # Simple case: just one call
-        final_op = base_veo_video(prompt_text, target_duration)
+        final_op, final_uri = base_veo_video(prompt_text, target_duration)
+        return final_uri
     else:
         # Complex case: generate 8s base, then loop extensions
         print(f"🚀 Long video requested ({target_duration}s). Running chain...")
-        current_op = base_veo_video(prompt_text, 8)
+        current_op, current_uri = base_veo_video(prompt_text, 8)
         current_len = 8
         
         while current_len < target_duration:
-            current_op = extend_veo_video(prompt_text, current_op)
+            current_op, current_uri = extend_veo_video(prompt_text, current_op)
             current_len += 7
 
-        final_op = current_op
+        final_uri = current_uri
 
-        print(f"✨ ALL DONE! Final video")
+        print(f"✨ ALL DONE! Final video at: {final_uri}")
+        return final_uri
+    
+def sign(input_uri):
+    # Return the blob name for serving
+    try:
+        if input_uri.startswith("gs://"):
+            valid_path = input_uri[5:]
+        else:
+            valid_path = input_uri
+            
+        parts = valid_path.split("/", 1)
+        if len(parts) >= 2:
+            return parts[1] # The blob name
+        return None
+        
+    except Exception as e:
+        print(f"Error parsing path: {e}")
+        return None
+
 
 # --- RUN IT ---
 PROMPT = "5 icecream on the desk falling repeatly"
-gen_video(PROMPT, target_duration=15)
+video_uri = gen_video(PROMPT, target_duration=6)
+signed_uri = sign(video_uri)
+
+print(signed_uri)
