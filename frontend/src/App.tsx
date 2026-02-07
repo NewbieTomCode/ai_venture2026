@@ -15,7 +15,7 @@ interface TrailerScene {
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [step, setStep] = useState(0); 
+  const [step, setStep] = useState(0);
   const [scenes, setScenes] = useState<TrailerScene[]>([]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +132,7 @@ export default function App() {
           <div className="mt-8 space-y-8 animate-in slide-in-from-bottom-10 fade-in duration-1000 fill-mode-both pb-20">
             <div className="flex items-center justify-between px-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Director's Shot List</h2>
-              <button onClick={() => {setStep(0); setSelectedFile(null);}} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
+              <button onClick={() => { setStep(0); setSelectedFile(null); }} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
             </div>
 
             <div className="grid gap-8">
