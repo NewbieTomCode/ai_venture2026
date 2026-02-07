@@ -68,5 +68,7 @@ def generate_trailer_prompt(book_text: str) -> TrailerScene:
         )
     )
 
+    print(response.parsed)
+
     # Gemini 2.0 returns the parsed object directly if response_schema is provided
     return response.parsed

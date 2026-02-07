@@ -16,7 +16,7 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(0);
-  const [scenes, setScenes] = useState<TrailerScene[]>([]);
+  const [scene, setScene] = useState<TrailerScene | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
