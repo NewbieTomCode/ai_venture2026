@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
 from services.ocr import extract_paragraphs
-from services.trailer_prompt import generate_trailer_prompts
+from services.trailer_prompt import generate_trailer_prompt # Singular function name
 import shutil
 import os
 
@@ -19,10 +19,10 @@ async def handle_request(file: UploadFile = File(...)):
         raw_text = extract_paragraphs(temp_path)
 
         # 3. Call the Director service
-        # This is the "Clean Call" you mentioned!
-        shot_list = generate_trailer_prompts(raw_text)
+        # Updated: Now returns a single TrailerScene object instead of a list
+        scene_data = generate_trailer_prompt(raw_text)
 
-        return {"scenes": shot_list}
+        return {"scene": scene_data}
         
     finally:
         if os.path.exists(temp_path):
