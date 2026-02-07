@@ -1,17 +1,21 @@
 import React, { useState, ChangeEvent } from 'react';
-import { Upload, FileText, Film, Sparkles, X, CheckCircle, Clapperboard, MessageSquare, Quote } from 'lucide-react';
+import { Upload, FileText, Film, Sparkles, X, CheckCircle, Clapperboard, Quote, Camera, Music, Eye, Timer } from 'lucide-react';
 
-// Define the shape of our AI response for TypeScript
+// TypeScript version of your Pydantic BaseClass
 interface TrailerScene {
   video_prompt: string;
+  camera_movement: string;
+  audio_landscape: string;
   voiceover_script: string;
+  visual_metaphor: string;
   mood: string;
+  duration_seconds: number;
 }
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [step, setStep] = useState(0); // 0: Idle, 1: Processing, 3: Done
+  const [step, setStep] = useState(0); 
   const [scenes, setScenes] = useState<TrailerScene[]>([]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,28 +28,21 @@ export default function App() {
 
   const handleGenerate = async () => {
     if (!selectedFile) return;
-    
     setIsProcessing(true);
-    setStep(1); // Show processing UI
+    setStep(1);
 
-    // Prepare the file for the multipart/form-data request
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     try {
-      // API Call to your FastAPI backend
       const response = await fetch('http://localhost:8000/processing/generate-trailer', {
         method: 'POST',
         body: formData,
       });
-
       if (!response.ok) throw new Error("Backend response failed");
-
       const data = await response.json();
-      
-      // data.scenes comes from your 'return {"scenes": scenes}' in FastAPI
       setScenes(data.scenes);
-      setStep(3); // Mark as complete
+      setStep(3);
     } catch (error) {
       console.error("Pipeline error:", error);
       alert("AI pipeline failed. Check if your backend is running!");
@@ -57,17 +54,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center p-4 md:p-12 selection:bg-indigo-100">
-      {/* Background Decorative Blobs */}
       <div className="fixed top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
       <div className="fixed top-0 -right-4 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-      {/* Container */}
-      <div className="relative max-w-2xl w-full">
-        
-        {/* Card Main */}
+      <div className="relative max-w-3xl w-full">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] p-8 md:p-10 border border-white/20">
-          
-          {/* Header */}
           <div className="flex flex-col items-center mb-10">
             <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 mb-4 rotate-3">
               <Film className="text-white w-7 h-7" />
@@ -76,7 +67,6 @@ export default function App() {
             <p className="text-slate-500 mt-2 font-medium">Elevate your manuscript into cinema</p>
           </div>
 
-          {/* Logic: Upload vs Processing */}
           {!isProcessing && step !== 3 ? (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <label className="group relative flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-all duration-300">
@@ -93,19 +83,15 @@ export default function App() {
               </label>
 
               {selectedFile && (
-                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm animate-in zoom-in-95">
+                <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                      <FileText className="w-5 h-5" />
-                    </div>
+                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><FileText className="w-5 h-5" /></div>
                     <div>
                       <p className="text-sm font-bold text-slate-700 truncate w-48">{selectedFile.name}</p>
                       <p className="text-xs text-slate-400">Ready for analysis</p>
                     </div>
                   </div>
-                  <button onClick={() => setSelectedFile(null)} className="p-2 text-slate-300 hover:text-red-400 transition-colors">
-                    <X className="w-5 h-5" />
-                  </button>
+                  <button onClick={() => setSelectedFile(null)} className="p-2 text-slate-300 hover:text-red-400"><X className="w-5 h-5" /></button>
                 </div>
               )}
             </div>
@@ -113,9 +99,7 @@ export default function App() {
             <div className="py-12 space-y-8 text-center animate-in fade-in zoom-in">
               <div className="relative flex justify-center">
                 <div className="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-indigo-600 animate-pulse" />
-                </div>
+                <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="w-8 h-8 text-indigo-600 animate-pulse" /></div>
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-slate-800">Directing your trailer...</h3>
@@ -123,19 +107,15 @@ export default function App() {
               </div>
             </div>
           ) : (
-            /* Result State: Done */
             <div className="py-4 text-center animate-in fade-in zoom-in">
               <div className="flex flex-col items-center">
-                <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle className="w-10 h-10 text-emerald-500" />
-                </div>
+                <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4"><CheckCircle className="w-10 h-10 text-emerald-500" /></div>
                 <h3 className="text-2xl font-bold text-slate-900">Script Complete</h3>
                 <p className="text-slate-500">Your cinematic vision is ready for production</p>
               </div>
             </div>
           )}
 
-          {/* Primary CTA Button */}
           <button
             onClick={handleGenerate}
             disabled={!selectedFile || isProcessing || step === 3}
@@ -148,46 +128,64 @@ export default function App() {
           </button>
         </div>
 
-        {/* RESULTS SECTION: The Storyboard */}
         {step === 3 && scenes.length > 0 && (
-          <div className="mt-8 space-y-6 animate-in slide-in-from-bottom-10 fade-in duration-1000 fill-mode-both">
-            <div className="flex items-center justify-between">
+          <div className="mt-8 space-y-8 animate-in slide-in-from-bottom-10 fade-in duration-1000 fill-mode-both pb-20">
+            <div className="flex items-center justify-between px-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Director's Shot List</h2>
-              <button onClick={() => {setStep(0); setSelectedFile(null);}} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">
-                New Project
-              </button>
+              <button onClick={() => {setStep(0); setSelectedFile(null);}} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
             </div>
 
-            <div className="grid gap-6">
+            <div className="grid gap-8">
               {scenes.map((scene, index) => (
-                <div key={index} className="group bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold">
-                        {index + 1}
-                      </span>
-                      <span className="text-sm font-bold uppercase tracking-widest text-indigo-600">
-                        {scene.mood}
-                      </span>
+                <div key={index} className="group bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-900 text-white font-bold">{index + 1}</span>
+                      <span className="text-sm font-black uppercase tracking-[0.2em] text-indigo-600">{scene.mood}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
+                      <Timer className="w-3 h-3 text-slate-400" />
+                      <span className="text-xs font-bold text-slate-500">{scene.duration_seconds}s</span>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex gap-4">
-                      <div className="mt-1"><Clapperboard className="w-4 h-4 text-slate-400" /></div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase mb-1">Visual Prompt</p>
-                        <p className="text-slate-700 leading-relaxed font-medium">{scene.video_prompt}</p>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="flex gap-4">
+                        <Clapperboard className="w-5 h-5 text-slate-400 shrink-0 mt-1" />
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Visual Prompt</p>
+                          <p className="text-slate-800 font-medium leading-relaxed">{scene.video_prompt}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <Camera className="w-5 h-5 text-slate-400 shrink-0 mt-1" />
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Camera Movement</p>
+                          <p className="text-slate-700">{scene.camera_movement}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <Eye className="w-5 h-5 text-slate-400 shrink-0 mt-1" />
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Visual Metaphor</p>
+                          <p className="text-slate-600 italic text-sm">{scene.visual_metaphor}</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                      <div className="mt-1"><Quote className="w-4 h-4 text-indigo-400" /></div>
-                      <div>
-                        <p className="text-xs font-bold text-indigo-400 uppercase mb-1">Voiceover Script</p>
-                        <p className="text-slate-900 font-bold italic leading-relaxed text-lg">
-                          "{scene.voiceover_script}"
-                        </p>
+                    <div className="space-y-6">
+                      <div className="p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100 relative">
+                        <Quote className="absolute -top-3 -left-1 w-8 h-8 text-indigo-200 -rotate-12" />
+                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Voiceover Script</p>
+                        <p className="text-indigo-900 font-bold italic text-lg leading-snug">"{scene.voiceover_script}"</p>
+                      </div>
+                      <div className="flex gap-4 px-2">
+                        <Music className="w-5 h-5 text-slate-400 shrink-0 mt-1" />
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Audio Landscape</p>
+                          <p className="text-slate-600 text-sm">{scene.audio_landscape}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
