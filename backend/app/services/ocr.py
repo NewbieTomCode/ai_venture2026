@@ -16,6 +16,8 @@ def extract_paragraphs(image_path):
 
     print(f"--- Extracting Text from: {image_path} ---\n")
 
+    all_paragraphs = []
+
     for page in annotation.pages:
         for block in page.blocks:
             for paragraph in block.paragraphs:
@@ -25,24 +27,26 @@ def extract_paragraphs(image_path):
                     para_text += word_text + " "
                 
                 # Print the completed paragraph with a double newline
-                print(f"{para_text.strip()}\n")
+                all_paragraphs.append(para_text.strip())
 
     if response.error.message:
         raise Exception(f"API Error: {response.error.message}")
+
+    return "\n\n".join(all_paragraphs)
 
 # To run the script:
 # 1. Ensure you've run: gcloud auth application-default login
 # 2. Update the filename below
 
-if __name__ == "__main__":
-    test_image = "antanddove.jpg" # Ensure this file is in the same folder as your script
+# if __name__ == "__main__":
+#     test_image = "antanddove.jpg" # Ensure this file is in the same folder as your script
     
-    if not os.path.exists(test_image):
-        print(f"❌ Error: Could not find the file '{test_image}'")
-    else:
-        try:
-            print("🚀 Connecting to Google Cloud Vision API...")
-            extract_paragraphs(test_image)
-            print("✅ Success!")
-        except Exception as e:
-            print(f"❌ An error occurred:\n{e}")
+#     if not os.path.exists(test_image):
+#         print(f"❌ Error: Could not find the file '{test_image}'")
+#     else:
+#         try:
+#             print("🚀 Connecting to Google Cloud Vision API...")
+#             extract_paragraphs(test_image)
+#             print("✅ Success!")
+#         except Exception as e:
+#             print(f"❌ An error occurred:\n{e}")
