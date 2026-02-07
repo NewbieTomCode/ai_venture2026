@@ -40,42 +40,24 @@ def generate_veo_video(prompt_text):
 
     print("Video generation complete! Check your bucket now.")
     
-    # Generate Signed URL
+    # Return the blob name for serving
     try:
-        storage_client = storage.Client(project=project_id)
-        
-        # Parse bucket and blob name from full_uri
-        # expected format: gs://bucket-name/blob-name
         if full_uri.startswith("gs://"):
             valid_path = full_uri[5:]
         else:
             valid_path = full_uri
             
         parts = valid_path.split("/", 1)
-        if len(parts) < 2:
-            print(f"Error parsing GCS URI: {full_uri}")
-            return None
-            
-        bucket_name = parts[0]
-        blob_name = parts[1]
-        
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(blob_name)
-        
-        # Generate a signed URL valid for 1 hour
-        url = blob.generate_signed_url(
-            version="v4",
-            expiration=datetime.timedelta(hours=1),
-            method="GET"
-        )
-        print(f"Signed URL: {url}")
-        return url
+        if len(parts) >= 2:
+            return parts[1] # The blob name
+        return None
         
     except Exception as e:
-        print(f"Error generating signed URL: {e}")
+        print(f"Error parsing path: {e}")
         return None
 
-PROMPT = """ 3 pigs eating corns """
+PROMPT = """ 3 cows eating grass """
 
 if __name__ == "__main__":
-    generate_veo_video(PROMPT)
+    result = generate_veo_video(PROMPT)
+    print(f"Generated Blob Name: {result}")
