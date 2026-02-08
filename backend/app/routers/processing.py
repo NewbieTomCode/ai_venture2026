@@ -24,9 +24,9 @@ async def handle_request(file: UploadFile = File(...)):
         # Updated: Now returns a single TrailerScene object instead of a list
         scene_data = generate_trailer_prompt(raw_text)
 
-        # 4. Generate the Video using Veo (extended 30s version)
+        # 4. Generate the Video using Veo (extended 15s version)
         print(f"Generating extended video for prompt: {scene_data.video_prompt}")
-        video_blob = generate_video(scene_data, 30)
+        video_blob = generate_video(scene_data, 15)
 
         return {
             "scene": scene_data,
