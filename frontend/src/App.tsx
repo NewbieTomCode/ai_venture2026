@@ -17,12 +17,14 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(0);
   const [scene, setScene] = useState<TrailerScene | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
       setStep(0);
       setScene(null);
+      setVideoUrl(null);
     }
   };
 
@@ -44,6 +46,9 @@ export default function App() {
 
       // 3. Update to access the single 'scene' key from your FastAPI response
       setScene(data.scene);
+      if (data.video_blob) {
+        setVideoUrl(`http://localhost:8000/media/video/${data.video_blob}`);
+      }
       setStep(3);
     } catch (error) {
       console.error("Pipeline error:", error);
@@ -136,7 +141,7 @@ export default function App() {
           <div className="mt-8 space-y-8 animate-in slide-in-from-bottom-10 fade-in duration-1000 fill-mode-both pb-20">
             <div className="flex items-center justify-between px-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Director's Shot List</h2>
-              <button onClick={() => { setStep(0); setSelectedFile(null); }} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
+              <button onClick={() => { setStep(0); setSelectedFile(null); setVideoUrl(null); }} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
             </div>
 
             <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-2xl relative overflow-hidden">
@@ -144,6 +149,16 @@ export default function App() {
               <div className="absolute top-10 right-[-40px] rotate-45 bg-indigo-600 text-white px-12 py-1 text-[10px] font-black tracking-[0.3em] uppercase">
                 30 Seconds Continuous
               </div>
+
+              {/* VIDEO PLAYER SECTION */}
+              {videoUrl && (
+                <div className="mb-10 rounded-2xl overflow-hidden shadow-lg border-4 border-slate-900 aspect-[9/16] max-w-sm mx-auto bg-black">
+                  <video controls autoPlay className="w-full h-full object-cover">
+                    <source src={videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
 
               <div className="flex items-center gap-4 mb-10">
                 <span className="flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-black tracking-widest uppercase">The Sequence</span>

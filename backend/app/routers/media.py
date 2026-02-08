@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 
 router = APIRouter(prefix="/media")
 
-@router.get("/video/{blob_name}")
+@router.get("/video/{blob_name:path}")
 async def get_video(blob_name: str):
     load_dotenv(find_dotenv())
     project_id = os.getenv("GOOGLE_CLOUD_PROJECT")

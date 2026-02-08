@@ -1,8 +1,10 @@
 from fastapi import APIRouter, UploadFile, File
-from services.ocr import extract_paragraphs
-from services.trailer_prompt import generate_trailer_prompt # Singular function name
+from app.services.ocr import extract_paragraphs
+from app.services.trailer_prompt import generate_trailer_prompt # Singular function name
 import shutil
 import os
+
+from app.services.video_generator import generate_video
 
 router = APIRouter(prefix="/processing")
 
@@ -22,7 +24,14 @@ async def handle_request(file: UploadFile = File(...)):
         # Updated: Now returns a single TrailerScene object instead of a list
         scene_data = generate_trailer_prompt(raw_text)
 
-        return {"scene": scene_data}
+        # 4. Generate the Video using Veo (extended 30s version)
+        print(f"Generating extended video for prompt: {scene_data.video_prompt}")
+        video_blob = generate_video(scene_data, 30)
+
+        return {
+            "scene": scene_data,
+            "video_blob": video_blob
+        }
         
     finally:
         if os.path.exists(temp_path):
