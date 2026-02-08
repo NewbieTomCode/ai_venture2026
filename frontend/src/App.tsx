@@ -1,21 +1,20 @@
 import React, { useState, ChangeEvent } from 'react';
-import { Upload, FileText, Film, Sparkles, X, CheckCircle, Clapperboard, Quote, Camera, Music, Eye, Timer, Zap } from 'lucide-react';
+import { Upload, FileText, Film, Sparkles, X, CheckCircle, Clapperboard, Quote, Zap } from 'lucide-react';
 
-// 1. Updated Interface to reflect a single, 30s scene evolution
 interface TrailerScene {
   video_prompt: string;
-  camera_choreography: string; // Renamed for complexity
+  camera_choreography: string;
   audio_landscape: string;
   voiceover_script: string;
   visual_metaphor: string;
-  lighting_evolution: string; // New field from our system prompt
+  lighting_evolution: string;
   mood: string;
 }
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0); 
   const [scene, setScene] = useState<TrailerScene | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
@@ -44,7 +43,6 @@ export default function App() {
       if (!response.ok) throw new Error("Backend response failed");
       const data = await response.json();
 
-      // 3. Update to access the single 'scene' key from your FastAPI response
       setScene(data.scene);
       if (data.video_blob) {
         setVideoUrl(`http://localhost:8000/media/video/${data.video_blob}`);
@@ -61,7 +59,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center p-4 md:p-12 selection:bg-indigo-100">
-      {/* Background Blobs */}
       <div className="fixed top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
       <div className="fixed top-0 -right-4 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
@@ -71,8 +68,8 @@ export default function App() {
             <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 mb-4 rotate-3">
               <Film className="text-white w-7 h-7" />
             </div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">TrailerForge</h1>
-            <p className="text-slate-500 mt-2 font-medium">One Shot. One Vision. Total Immersion.</p>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">SceneForge</h1>
+            <p className="text-slate-500 mt-2 font-medium">15 Seconds. Pure Narrative. Total Immersion.</p>
           </div>
 
           {!isProcessing && step !== 3 ? (
@@ -84,7 +81,7 @@ export default function App() {
                   </div>
                   <div className="text-center">
                     <p className="text-slate-600 font-semibold text-lg">Upload Manuscript Source</p>
-                    <p className="text-slate-400 text-sm">PDF or Image (parsed by Vision AI)</p>
+                    <p className="text-slate-400 text-sm">PDF or Image for 15s Teaser</p>
                   </div>
                 </div>
                 <input type="file" className="hidden" onChange={handleFileChange} accept="image/*,.pdf" />
@@ -96,7 +93,7 @@ export default function App() {
                     <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><FileText className="w-5 h-5" /></div>
                     <div>
                       <p className="text-sm font-bold text-slate-700 truncate w-48">{selectedFile.name}</p>
-                      <p className="text-xs text-slate-400">Contextualizing Narrative...</p>
+                      <p className="text-xs text-slate-400">Ready for 15s generation...</p>
                     </div>
                   </div>
                   <button onClick={() => setSelectedFile(null)} className="p-2 text-slate-300 hover:text-red-400"><X className="w-5 h-5" /></button>
@@ -110,16 +107,16 @@ export default function App() {
                 <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="w-8 h-8 text-indigo-600 animate-pulse" /></div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold text-slate-800">Directing the Long Take...</h3>
-                <p className="text-slate-500 animate-pulse">Calculating 30-second camera choreography</p>
+                <h3 className="text-xl font-bold text-slate-800 tracking-tight">Directing 15s Narrative...</h3>
+                <p className="text-slate-500 animate-pulse">Processing cinematic continuous shot</p>
               </div>
             </div>
           ) : (
             <div className="py-4 text-center animate-in fade-in zoom-in">
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4"><CheckCircle className="w-10 h-10 text-emerald-500" /></div>
-                <h3 className="text-2xl font-bold text-slate-900">Cinematic Masterpiece Ready</h3>
-                <p className="text-slate-500">One continuous shot generated from your text</p>
+                <h3 className="text-2xl font-bold text-slate-900">15s Masterpiece Ready</h3>
+                <p className="text-slate-500">Directly inspired by your source material</p>
               </div>
             </div>
           )}
@@ -131,93 +128,53 @@ export default function App() {
           >
             <div className="relative flex items-center justify-center gap-2">
               {step === 3 ? <CheckCircle className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
-              <span>{step === 3 ? "Script Lock" : "Generate 30s Trailer"}</span>
+              <span>{step === 3 ? "Shot Complete" : "Generate 15s Teaser"}</span>
             </div>
           </button>
         </div>
 
-        {/* 4. Displaying the Single Scene Evolution */}
         {step === 3 && scene && (
           <div className="mt-8 space-y-8 animate-in slide-in-from-bottom-10 fade-in duration-1000 fill-mode-both pb-20">
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Director's Shot List</h2>
-              <button onClick={() => { setStep(0); setSelectedFile(null); setVideoUrl(null); }} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Project</button>
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Final Cut</h2>
+              <button onClick={() => { setStep(0); setSelectedFile(null); setVideoUrl(null); }} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">New Teaser</button>
             </div>
 
             <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-2xl relative overflow-hidden">
-              {/* Watermark for 30s logic */}
               <div className="absolute top-10 right-[-40px] rotate-45 bg-indigo-600 text-white px-12 py-1 text-[10px] font-black tracking-[0.3em] uppercase">
-                30 Seconds Continuous
+                15 Seconds
               </div>
 
-              {/* VIDEO PLAYER SECTION */}
               {videoUrl && (
                 <div className="mb-10 rounded-2xl overflow-hidden shadow-lg border-4 border-slate-900 aspect-[9/16] max-w-sm mx-auto bg-black">
                   <video controls autoPlay className="w-full h-full object-cover">
                     <source src={videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
                   </video>
                 </div>
               )}
 
-              <div className="flex items-center gap-4 mb-10">
-                <span className="flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-black tracking-widest uppercase">The Sequence</span>
-                <span className="text-sm font-black uppercase tracking-[0.2em] text-indigo-600 flex items-center gap-2">
-                  <Zap className="w-4 h-4 fill-indigo-600" /> {scene.mood}
-                </span>
-              </div>
-
-              <div className="grid lg:grid-cols-5 gap-10">
-                {/* Visual Narrative Column */}
-                <div className="lg:col-span-3 space-y-8">
-                  <div>
-                    <div className="flex items-center gap-3 mb-3 text-slate-400">
+              <div className="space-y-10">
+                {/* Unified Visual & Script Section */}
+                <div className="max-w-2xl mx-auto space-y-8">
+                  <div className="text-center space-y-4">
+                    <div className="flex items-center justify-center gap-3 text-slate-400">
                       <Clapperboard className="w-5 h-5" />
                       <p className="text-[10px] font-black uppercase tracking-[0.2em]">Visual Narrative Arc</p>
                     </div>
-                    <p className="text-slate-800 font-medium leading-relaxed text-lg italic">"{scene.video_prompt}"</p>
+                    <p className="text-slate-800 font-medium leading-relaxed text-xl italic px-4">
+                      "{scene.video_prompt}"
+                    </p>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <div className="flex items-center gap-2 mb-2 text-slate-400">
-                        <Camera className="w-4 h-4" />
-                        <p className="text-[9px] font-black uppercase tracking-widest">Choreography</p>
-                      </div>
-                      <p className="text-slate-700 text-sm font-semibold">{scene.camera_choreography}</p>
+                  <div className="relative p-8 bg-indigo-600 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-200">
+                    <Quote className="absolute -top-4 -left-2 w-12 h-12 text-white/20" />
+                    <div className="flex items-center gap-2 mb-4">
+                        <Zap className="w-4 h-4 fill-indigo-300 text-indigo-300" />
+                        <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">Voiceover Fragment</p>
                     </div>
-                    <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <div className="flex items-center gap-2 mb-2 text-slate-400">
-                        <Sparkles className="w-4 h-4" />
-                        <p className="text-[9px] font-black uppercase tracking-widest">Lighting Evolution</p>
-                      </div>
-                      <p className="text-slate-700 text-sm font-semibold">{scene.lighting_evolution}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 items-start p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100">
-                    <Eye className="w-5 h-5 text-emerald-500 shrink-0 mt-1" />
-                    <div>
-                      <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1">Metaphoric Anchor (Anti-Spoiler)</p>
-                      <p className="text-emerald-900 text-sm italic">{scene.visual_metaphor}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Audio & Script Column */}
-                <div className="lg:col-span-2 space-y-8">
-                  <div className="p-8 bg-indigo-600 rounded-[2rem] text-white shadow-xl shadow-indigo-100 relative">
-                    <Quote className="absolute top-4 right-4 w-10 h-10 text-white/10" />
-                    <p className="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-4">Voiceover Fragments</p>
-                    <p className="text-xl font-serif italic leading-snug">"{scene.voiceover_script}"</p>
-                  </div>
-
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                    <div className="flex items-center gap-3 mb-3 text-slate-400">
-                      <Music className="w-5 h-5" />
-                      <p className="text-[10px] font-black uppercase tracking-widest">30s Soundscape</p>
-                    </div>
-                    <p className="text-slate-600 text-sm leading-relaxed">{scene.audio_landscape}</p>
+                    <p className="text-2xl font-serif italic leading-snug text-center">
+                      "{scene.voiceover_script}"
+                    </p>
                   </div>
                 </div>
               </div>
